@@ -10,9 +10,6 @@ var fs = require("fs");
 
 var porta = "8888";
 
-//TO-DO: Especificar decentemente qual será o caminho do arquivo
-var pastaJsonVend = "./jsonVend/";
-
 // Processa um request do tipo POST
 function processPost(request, response, callback) {
     var queryData = "";
@@ -39,33 +36,10 @@ function processPost(request, response, callback) {
         //jsontiza os dados do request
         var jsonVend = JSON.parse(queryData);
 
-        //compoe o nome do arquivo com data+T+hora+cpf
-        nomeArquivo = jsonVend.sale_date.replace(" ", "T") + "-";
-        nomeArquivo += jsonVend.customer.customer_code;
+        var vendaDao = require('./dao/vendaDAO');
 
-        /*
-        checa se o arquivo existe antes de salvar.
-        Se já existir, inclui um diferenciador no fim do arquivo
-        */
-        var i = 2;
-        while (fs.existsSync(pastaJsonVend + nomeArquivo+".json")){
-            if (fs.existsSync(pastaJsonVend + nomeArquivo+"v"+i+".json")){
-                nomeArquivo = nomeArquivo.replace("v"+i,"v"+i+1);
-            } else {
-                nomeArquivo = nomeArquivo + "v"+i;
-            }
-            i++;
-        }
-
-        //extensão pra identificar
-        nomeArquivo += ".json";
-
-        console.log("gravando arquivo " + nomeArquivo + " em " + pastaJsonVend);
-        fs.writeFile(pastaJsonVend + nomeArquivo, JSON.stringify(jsonVend), "utf8", function(err) {
-            if (err) {
-               return console.error(err);
-            }
-        });
+        //Persiste a venda para processamento posterior
+        vendaDao.saveVenda(jsonVend);
 
         //use a linha abaixo para logar o conteúdo do post
         //console.log(JSON.parse(queryData));
@@ -79,7 +53,7 @@ console.log("Iniciando servidor");
 console.log("\n");
 
 /*
-  Criando servidor
+  Criando servidor WebHook para o Vend
 */
 http.createServer(function (request, response) {
 
