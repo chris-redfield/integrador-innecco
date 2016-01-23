@@ -5,8 +5,6 @@
 
 //lib http do webserver
 var http = require("http");
-//lib para processar os requests
-var querystring = require('querystring');
 //lib para io com o file system
 var fs = require("fs");
 
@@ -35,10 +33,22 @@ function processPost(request, response, callback) {
     });
 
     request.on('end', function() {
-        request.post = querystring.parse(queryData);
+        //jsontiza os dados do request
+        var jsonVend = JSON.parse(queryData);
 
+        //compoe o nome do arquivo com data+T+hora+cpf.json
+        nomeArquivo = jsonVend.sale_date.replace(" ", "T") + "-";
+        nomeArquivo += jsonVend.customer.customer_code + ".json";
+        console.log(nomeArquivo);
+
+        //TO-DO: Especificar decentemente qual será o caminho do arquivo
+        fs.writeFile( "./jsonVend/"+nomeArquivo, JSON.stringify(jsonVend), "utf8", function(err) {
+            if (err) {
+               return console.error(err);
+            }
+        });
         //use a linha abaixo para logar o conteúdo do post
-        console.log(request.post);
+        //console.log(JSON.parse(queryData));
         callback();
     });
 
