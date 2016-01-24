@@ -5,8 +5,9 @@
 
 //lib http do webserver
 var http = require("http");
-//lib para io com o file system
-var fs = require("fs");
+
+//lib tratar o POST
+var qs = require("querystring");
 
 var porta = "8888";
 
@@ -33,6 +34,16 @@ function processPost(request, response, callback) {
     });
 
     request.on('end', function() {
+
+        //parseia o request para manipulação
+        var post = qs.parse(queryData);
+
+        //retira somente o payload JSON
+        queryData = post['payload'];
+
+        //use a linha abaixo para logar o conteúdo do JSON
+        //console.log(JSON.parse(queryData));
+
         //jsontiza os dados do request
         var jsonVend = JSON.parse(queryData);
 
@@ -41,8 +52,6 @@ function processPost(request, response, callback) {
         //Persiste a venda para processamento posterior
         vendaDao.saveVenda(jsonVend);
 
-        //use a linha abaixo para logar o conteúdo do post
-        //console.log(JSON.parse(queryData));
         callback();
     });
 
