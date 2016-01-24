@@ -1,0 +1,10 @@
+{
+  "name": "integrador-innecco",
+  "version": "0.1.0",
+  "description": "integrador Node.js entre o VendHQ e o FocusNF-e",
+  "author": "Christian Miranda <christian.miranda@gmail.com>",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  }
+}
