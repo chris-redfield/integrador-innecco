@@ -6,3 +6,6 @@ app:
 
   ports:
     - "49160:8888"
+
+  volumes:
+    - ./db:/usr/db
