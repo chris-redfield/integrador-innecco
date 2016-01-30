@@ -3,12 +3,17 @@
   "version": "0.1.0",
   "description": "integrador Node.js entre o VendHQ e o FocusNF-e",
   "author": "Christian Miranda <christian.miranda@gmail.com>",
-  "main": "main.js",
+  "main": "app.js",
   "scripts": {
     "start": "node /usr/src/app/main.js"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/chris-redfield/integrador-innecco"
+  },
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "express": "^4.13.4",
+    "sqlite3": "^3.1.1"
   }
 }
