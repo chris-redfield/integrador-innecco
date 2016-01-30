@@ -47,7 +47,7 @@ function processPost(request, response, callback) {
         //jsontiza os dados do request
         var jsonVend = JSON.parse(queryData);
 
-        var vendaDao = require('./dao/vendaDAO');
+        var vendaDao = require('./dao/venda');
 
         //Persiste a venda para processamento posterior
         vendaDao.saveVenda(jsonVend);

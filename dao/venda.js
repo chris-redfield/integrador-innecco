@@ -2,6 +2,31 @@
     DAO do objeto venda
 */
 
+/*
+    Queries no SQLite
+    Para conectar ao banco
+    var sqlite3 = require("sqlite3").verbose();
+    var db = new sqlite3.Database(file);
+
+    db.serialize(function() {
+      Queries dentro desse bloco rodam sequencialmente
+      db.run("QUERY"); para executar uma query
+      db.each("SELECT rowid AS id, thing FROM Stuff", function(err, row) {
+        loop por todos os resultados retornados pela query
+      });
+    });
+
+    db.parallel(function() {
+      Queries dentro desse bloco rodam em paralelo
+      var stmt = db.prepare("INSERT INTO Stuff VALUES (?)"); query parametrizada
+      stmt.run("Thing"); preparando a query com o valor do parametro
+      stmt.finalize();
+    });
+
+    Encerra a conexao
+    db.close();
+*/
+
 //lib para io com o file system
 var fs = require("fs");
 
