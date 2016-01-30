@@ -2,6 +2,10 @@ FROM node:argon
 
 # Diretorio de deploy no container
 RUN mkdir -p /usr/src/app
+
+# Diretorio temporário da fila de jsons
+RUN mkdir -p /usr/src/app/jsonVend
+
 WORKDIR /usr/src/app
 
 # Instala dependencias, se houverem
