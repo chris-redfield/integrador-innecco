@@ -9,4 +9,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use('/api', vendas); //rota raiz
 
+//registrar cada uma das DAOs
+//var venda = require('./dao/venda');
+//venda.sync();
+
 module.exports = app;
