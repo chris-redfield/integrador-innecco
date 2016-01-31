@@ -2,3 +2,6 @@ node_modules/
 # Pasta onde ficarão os jsons recebidos do Vend
 jsonVend/*.json
 db/
+
+# logs
+*.log
