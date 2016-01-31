@@ -8,4 +8,4 @@ app:
     - "49160:8888"
 
   volumes:
-    - ./db:/usr/db
+    - ./db:/usr/src/app/db
