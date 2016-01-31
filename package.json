@@ -5,7 +5,7 @@
   "author": "Christian Miranda <christian.miranda@gmail.com>",
   "main": "app.js",
   "scripts": {
-    "start": "node /usr/src/app/main.js"
+    "start": "node bin/www"
   },
   "repository": {
     "type": "git",
@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "body-parser": "^1.14.2",
+    "sqlite3": "^3.1.1",
     "express": "^4.13.4",
-    "sequelize": "^3.18.0",
-    "sqlite3": "^3.1.1"
+    "sequelize": "^3.18.0"
   }
 }
