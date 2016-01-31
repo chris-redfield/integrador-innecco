@@ -68,39 +68,107 @@ models.Venda = sequelize.define('venda', {
   }
   //items: {},
   //formas_pagamento: {}
-}, {
+},
+{
+   classMethods: {
+     associate: function(models) {
+       models.Venda.hasMany(models.Item)
+     }
+   }
+ },
+{
   freezeTableName: true // Model tableName will be the same as the model name
 });
+
+// Fim da Venda
+
+models.Item = sequelize.define('item', {
+  numero_item: {
+    /*  esse campo deve crescer sequencialmente
+        para cada venda à partir de 1   */
+    type: Sequelize.INTEGER,
+  },
+  codigo_ncm: {
+    type: Sequelize.STRING,
+  },
+  codigo_produto: {
+    type: Sequelize.STRING,
+  },
+  descricao: {
+    type: Sequelize.TEXT,
+  },
+  quantidade_comercial: {
+    // Quantidade de itens
+    type: Sequelize.INTEGER,
+  },
+  quantidade_tributavel: {
+    /* Caso haja itens tributáveis e não tributáveis
+        por default, colocar a mesma quantidade de itens  */
+    type: Sequelize.INTEGER,
+  },
+  cfop: {
+    // Código Fiscal da operação
+    type: Sequelize.STRING,
+  },
+  valor_unitario_comercial: {
+    type: Sequelize.DECIMAL(10,2),
+  },
+  valor_unitario_tributavel: {
+    /*  caso o produto seja tributável
+        por default, colocar o mesmo valor do comercial   */
+    type: Sequelize.DECIMAL(10,2),
+  },
+  unidade_comercial: {
+    type: Sequelize.STRING,
+  },
+  unidade_tributavel: {
+    /*  caso o produto seja tributável
+        por default, colocar o mesmo valor da unidade_comercial   */
+    type: Sequelize.STRING,
+  },
+  icms_origem: {
+    /*  Aceita valores entre 1 e 7, vide documentação
+    no site focus nfc-e   */
+    type: Sequelize.INTEGER,
+  },
+  /*
+  Valores possíveis:
+  Para empresas optantes do SIMPLES:
+  103 - Isenção do ICMS no Simples Nacional para faixa de receita bruta (para simples)
+
+  Para empresas não optantes do SIMPLES
+
+  00 - tributada integralmente (para quem não é do simples)
+  40 - Isenta (para quem não é do simples)
+  */
+  icms_situacao_tributaria: {
+    type: Sequelize.INTEGER,
+  },
+  /* Deve estar entre 0 e 100, obrigatório se
+     situação tributária for igual a 00    */
+  icms_aliquota: {
+    type: Sequelize.INTEGER,
+  }
+},
+{
+  classMethods: {
+    associate: function(models) {
+      models.Item.belongsTo(models.Venda)
+    }
+  }
+},
+ {
+  freezeTableName: true // Model tableName will be the same as the model name
+});
+
+models.Item.associate(models);
+models.Venda.associate(models);
 
 models.sequelize = sequelize;
 models.Sequelize = Sequelize;
 
 module.exports = models;
 
-/*
-    Queries no SQLite
-    Para conectar ao banco
-    var sqlite3 = require("sqlite3").verbose();
-    var db = new sqlite3.Database(file);
-
-    db.serialize(function() {
-      Queries dentro desse bloco rodam sequencialmente
-      db.run("QUERY"); para executar uma query
-      db.each("SELECT rowid AS id, thing FROM Stuff", function(err, row) {
-        loop por todos os resultados retornados pela query
-      });
-    });
-
-    db.parallel(function() {
-      Queries dentro desse bloco rodam em paralelo
-      var stmt = db.prepare("INSERT INTO Stuff VALUES (?)"); query parametrizada
-      stmt.run("Thing"); preparando a query com o valor do parametro
-      stmt.finalize();
-    });
-
-    Encerra a conexao
-    db.close();
-*/
 /*
 //lib para io com o file system
 var fs = require("fs");
