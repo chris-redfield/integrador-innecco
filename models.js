@@ -19,6 +19,21 @@ var sequelize = new Sequelize('dbvendas', 'username', 'password', {
 });
 
 models.Venda = sequelize.define('venda', {
+
+  id_vend: {
+    type: Sequelize.STRING,
+  },
+  /*
+    estado da venda (TODO: normalizar isso dps)
+    0 - Recebida pelo Vend
+    1 - Preenchida com todos os dados
+    2 - Emitida no Focus
+    3 - Impressa
+  */
+  estado: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+  },
   nome_destinatario: {
     type: Sequelize.STRING,
   },
