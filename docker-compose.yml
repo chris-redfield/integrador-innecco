@@ -5,7 +5,7 @@ app:
   restart: always
 
   ports:
-    - "49160:8888"
+    - "49160:8000"
 
   volumes:
     - ./db:/usr/src/app/db
