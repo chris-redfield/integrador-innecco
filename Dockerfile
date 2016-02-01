@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y sqlite3
 RUN npm install
 
 # Porta que o webserver escuta
-EXPOSE 8888
+EXPOSE 8000
 
 # Comando para subida do serviço
 CMD [ "npm", "start" ]
