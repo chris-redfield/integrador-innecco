@@ -23,7 +23,7 @@ const CNPJAER = "";
     //console.log(json.register_sale_payments[0].register_sale.register_id);
 
     //Verifica qual o id do registrador, e associa ao CNPJ certo
-      if(json.register_sale_payments[0].register_sale.register_id == IDREG303){
+      if(json.register_id == IDREG303){
         cnpj = CNPJ303;
       } else {
         cnpj = CNPJAER;
