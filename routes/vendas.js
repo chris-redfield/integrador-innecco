@@ -16,12 +16,6 @@ const CNPJAER = "";
     var json = JSON.parse(req.body.payload);
     var cpfCliente = "";
     var nomeCliente = "";
-    //manda um item do json na resposta
-    //res.send(json.sale_date);
-    //manda um item do json pro log
-    //console.log(json.sale_date);
-
-    //console.log(json.register_sale_payments[0].register_sale.register_id);
 
     //Verifica qual o id do registrador, e associa ao CNPJ certo
       if(json.register_id == IDREG303){
@@ -39,29 +33,32 @@ const CNPJAER = "";
 
       var produtos = json.register_sale_products;
       var formasPagamento = json.register_sale_payments;
-      var valorDesconto = "";
+      var totalDesconto = "";
+      var totalProdutos = "";
 
       produtos.forEach(function(produto) {
         if(produto.price_total < 0 ){
-          valorDesconto = valorDesconto + Math.abs(produto.price_total);
+          totalDesconto = totalDesconto + Math.abs(produto.price_total);
+        } else {
+          totalProdutos = totalProdutos + Math.abs(produto.price_total);
         }
       });
 
-      console.log("Valor total do desconto: "+valorDesconto);
+      //pega a timezone do container
+      //TODO colocar a timezone do brasil na mao 0_0 ?
+      var dataVenda = new Date(Date.parse(json.sale_date));
 
       models.Venda.create({
         id_vend: json.id,
-        //TODO cologar o time zone nesse valor
-        data_emissao: json.sale_date,
+        //TODO cologar o time zone do brasil
+        data_emissao: dataVenda,
         cnpj_emitente: cnpj,
         nome_destinatario: nomeCliente,
         cpf_destinatario: cpfCliente,
-        valor_produtos: json.totals.total_price,
-        valor_desconto: valorDesconto,
+        valor_produtos: totalProdutos,
+        valor_desconto: totalDesconto,
         valor_total: json.totals.total_price,
         icms_valor_total: json.totals.total_tax,
-
-
         //venda nova
         estado: 0
       });
