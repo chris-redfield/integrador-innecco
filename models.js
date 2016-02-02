@@ -91,7 +91,7 @@ models.Venda = sequelize.define('venda', {
 {
    classMethods: {
      associate: function(models) {
-       models.Venda.hasMany(models.Item),
+       models.Venda.hasMany(models.Produto),
        models.Venda.hasMany(models.FormaPagamento)
      }
    }
@@ -102,7 +102,7 @@ models.Venda = sequelize.define('venda', {
 
 // Fim da Venda
 
-models.Item = sequelize.define('item', {
+models.Produto = sequelize.define('produto', {
   numero_item: {
     /*  esse campo deve crescer sequencialmente
         para cada venda à partir de 1   */
@@ -173,7 +173,7 @@ models.Item = sequelize.define('item', {
 {
   classMethods: {
     associate: function(models) {
-      models.Item.belongsTo(models.Venda)
+      models.Produto.belongsTo(models.Venda)
     }
   }
 },
@@ -244,7 +244,7 @@ models.FormaPagamento = sequelize.define('forma_pagamento', {
 });
 
 models.FormaPagamento.associate(models);
-models.Item.associate(models);
+models.Produto.associate(models);
 models.Venda.associate(models);
 
 models.sequelize = sequelize;
