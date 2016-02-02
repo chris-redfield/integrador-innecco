@@ -91,7 +91,7 @@ models.Venda = sequelize.define('venda', {
 {
    classMethods: {
      associate: function(models) {
-       models.Venda.hasMany(models.Produto),
+       models.Venda.hasMany(models.Item),
        models.Venda.hasMany(models.FormaPagamento)
      }
    }
@@ -102,7 +102,7 @@ models.Venda = sequelize.define('venda', {
 
 // Fim da Venda
 
-models.Produto = sequelize.define('produto', {
+models.Item = sequelize.define('item', {
   numero_item: {
     /*  esse campo deve crescer sequencialmente
         para cada venda à partir de 1   */
@@ -173,7 +173,7 @@ models.Produto = sequelize.define('produto', {
 {
   classMethods: {
     associate: function(models) {
-      models.Produto.belongsTo(models.Venda)
+      models.Item.belongsTo(models.Venda)
     }
   }
 },
@@ -244,53 +244,10 @@ models.FormaPagamento = sequelize.define('forma_pagamento', {
 });
 
 models.FormaPagamento.associate(models);
-models.Produto.associate(models);
+models.Item.associate(models);
 models.Venda.associate(models);
 
 models.sequelize = sequelize;
 models.Sequelize = Sequelize;
 
 module.exports = models;
-
-/*
-//lib para io com o file system
-var fs = require("fs");
-
-//TO-DO: Especificar decentemente qual será o caminho do arquivo
-var pastaJsonVend = "./jsonVend/";
-
-module.exports = {
-
-// Salva uma nova venda encaminhada pelo Vend
-saveVenda: function (jsonVend){
-
-    //compoe o nome do arquivo com data+T+hora+cpf
-    nomeArquivo = jsonVend.sale_date.replace(" ", "T") + "-";
-    nomeArquivo += jsonVend.customer.customer_code;
-
-    /*
-    checa se o arquivo existe antes de salvar.
-    Se já existir, inclui um diferenciador no fim do arquivo
-
-    var i = 2;
-    while (fs.existsSync(pastaJsonVend + nomeArquivo+".json")){
-        if (fs.existsSync(pastaJsonVend + nomeArquivo+"v"+i+".json")){
-            nomeArquivo = nomeArquivo.replace("v"+i,"v"+i+1);
-        } else {
-            nomeArquivo = nomeArquivo + "v"+i;
-        }
-        i++;
-    }
-
-    //extensão pra identificar
-    nomeArquivo += ".json";
-
-    console.log("gravando arquivo " + nomeArquivo + " em " + pastaJsonVend);
-    fs.writeFile(pastaJsonVend + nomeArquivo, JSON.stringify(jsonVend), "utf8", function(err) {
-        if (err) {
-           return console.error(err);
-        }
-    });
-}
-
-};*/
