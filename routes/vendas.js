@@ -37,7 +37,17 @@ const CNPJAER = "";
         json.customer.last_name;
       }
 
+      var produtos = json.register_sale_products;
+      var formasPagamento = json.register_sale_payments;
+      var valorDesconto = "";
 
+      produtos.forEach(function(produto) {
+        if(produto.price_total < 0 ){
+          valorDesconto = valorDesconto + Math.abs(produto.price_total);
+        }
+      });
+
+      console.log("Valor total do desconto: "+valorDesconto);
 
       models.Venda.create({
         id_vend: json.id,
@@ -47,9 +57,10 @@ const CNPJAER = "";
         nome_destinatario: nomeCliente,
         cpf_destinatario: cpfCliente,
         valor_produtos: json.totals.total_price,
-        valor_desconto: 0.00,
+        valor_desconto: valorDesconto,
         valor_total: json.totals.total_price,
         icms_valor_total: json.totals.total_tax,
+
 
         //venda nova
         estado: 0
