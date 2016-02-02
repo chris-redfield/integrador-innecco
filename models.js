@@ -80,6 +80,10 @@ models.Venda = sequelize.define('venda', {
   },
   icms_valor_total: {
     type: Sequelize.DECIMAL(10, 2),
+  },
+  modalidade_frete: {
+    type: Sequelize.INTEGER,
+    defaultValue: 9,
   }
   //items: {},
   //formas_pagamento: {}
@@ -87,7 +91,8 @@ models.Venda = sequelize.define('venda', {
 {
    classMethods: {
      associate: function(models) {
-       models.Venda.hasMany(models.Item)
+       models.Venda.hasMany(models.Item),
+       models.Venda.hasMany(models.FormaPagamento)
      }
    }
  },
@@ -176,6 +181,69 @@ models.Item = sequelize.define('item', {
   freezeTableName: true // Model tableName will be the same as the model name
 });
 
+models.FormaPagamento = sequelize.define('forma_pagamento', {
+  forma_pagamento: {
+    /*
+      01: Dinheiro
+      02: Cheque
+      03: Cartão de Crédito
+      04: Cartão de Débito
+      05: Crédito Loja
+      10: Vale Alimentação
+      11: Vale Refeição
+      12: Vale Presente
+      13: Vale Combustível
+      99: Outros
+    */
+    type: Sequelize.INTEGER,
+  },
+  valor_pagamento: {
+    type: Sequelize.INTEGER,
+  },
+  /*
+  Obrigatório se forma_pagamento for 03 ou 04
+    American Express
+    Rede
+    Cielo
+    Senff
+    GetNet
+    Regicred
+    Vero
+    PagSeguro
+    Paypal
+    Mercadopago
+  */
+  nome_credenciadora: {
+    type: Sequelize.STRING,
+  },
+  // Obrigatório se forma_pagamento for 03 ou 04
+  numero_autorizacao: {
+    type: Sequelize.STRING,
+  },
+  /*
+  Valores permitidos
+    01: Visa
+    02: Mastercard
+    03: American Express
+    04: Sorocred
+    99: Outros
+  */
+  bandeira_operadora: {
+    type: Sequelize.STRING,
+  }
+},
+{
+  classMethods: {
+    associate: function(models) {
+      models.FormaPagamento.belongsTo(models.Venda)
+    }
+  }
+},
+{
+  freezeTableName: true // Model tableName will be the same as the model name
+});
+
+models.FormaPagamento.associate(models);
 models.Item.associate(models);
 models.Venda.associate(models);
 

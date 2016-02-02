@@ -14,7 +14,8 @@ const CNPJAER = "";
 
     var cnpj = "";
     var json = JSON.parse(req.body.payload);
-
+    var cpfCliente = "";
+    var nomeCliente = "";
     //manda um item do json na resposta
     //res.send(json.sale_date);
     //manda um item do json pro log
@@ -29,12 +30,29 @@ const CNPJAER = "";
         cnpj = CNPJAER;
       }
 
+      // caso a venda não seja anônima, pega os dados do cliente
+      if(json.customer.customer_code != "WALKIN"){
+        cpfCliente = json.customer.customer_code;
+        nomeCliente = json.customer.first_name + " " +
+        json.customer.last_name;
+      }
+
+
+
       models.Venda.create({
         id_vend: json.id,
         //TODO cologar o time zone nesse valor
         data_emissao: json.sale_date,
         cnpj_emitente: cnpj,
+        nome_destinatario: nomeCliente,
+        cpf_destinatario: cpfCliente,
+        valor_produtos: json.totals.total_price,
+        valor_desconto: 0.00,
+        valor_total: json.totals.total_price,
+        icms_valor_total: json.totals.total_tax,
 
+        //venda nova
+        estado: 0
       });
 
       res.send(json);
