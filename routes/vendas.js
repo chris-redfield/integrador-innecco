@@ -36,6 +36,7 @@ const CNPJAER = "";
       var totalDesconto = "";
       var totalProdutos = "";
       var itens = [];
+      var formasPag = [];
 
       /*  Itera dentre os produtos, se o valor for < 0, é um descontos
           se o valor for > 0, então é produto, adicione no array 'itens'
@@ -64,7 +65,23 @@ const CNPJAER = "";
             icms_origem: 0,
             icms_situacao_tributaria: 40,
           });
+          numeroItem++;
         }
+      });
+
+      formasPagamento.forEach(function(formaPagamento) {
+        //por enquanto estamos pegando o type_id
+        //TODO: refazer esse método de inserção após ajustes no Vend pelo Raffael
+        formasPag.push({
+          forma_pagamento: formaPagamento.payment_type_id,
+          valor_pagamento: formaPagamento.amount,
+          nome_credenciadora: "Cielo",
+          //Esse número não vem do VendHQ*
+          //TODO veriricar como resolver obter esses dados
+          //esse numero é retornado pela máquina de cartão
+          numero_autorizacao: "12345678",
+          bandeira_operadora: "01", //Visa
+        });
       });
 
       //pega a timezone do container
@@ -73,6 +90,7 @@ const CNPJAER = "";
 
       //Fazendo esse alias para incluir os produtos
       var Produtos = models.Venda.hasMany(models.Item, {as: 'produtos'});
+      var Formas = models.Venda.hasMany(models.FormaPagamento, {as: 'formas'});
 
       models.Venda.create({
         id_vend: json.id,
@@ -88,10 +106,12 @@ const CNPJAER = "";
         //venda nova
         estado: 0,
         produtos: itens,
+        formas: formasPag,
       },
       {
-        include: [ Produtos ]
-      });
+        include: [ Produtos, Formas ]
+      }
+    );
 
       res.send(json);
 

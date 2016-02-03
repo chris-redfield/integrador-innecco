@@ -201,7 +201,7 @@ models.FormaPagamento = sequelize.define('forma_pagamento', {
       13: Vale Combustível
       99: Outros
     */
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
   },
   valor_pagamento: {
     type: Sequelize.INTEGER,
