@@ -35,18 +35,44 @@ const CNPJAER = "";
       var formasPagamento = json.register_sale_payments;
       var totalDesconto = "";
       var totalProdutos = "";
+      var itens = [];
 
+      /*  essa iteração está duplicada, pois precisamos obter o valor total dos descontos
+          e produtos para incluí-los na venda, antes de criar os objetos produtos, que
+          dependem da venda para existir */
+      var numeroItem = 1;
       produtos.forEach(function(produto) {
         if(produto.price_total < 0 ){
           totalDesconto = totalDesconto + Math.abs(produto.price_total);
         } else {
           totalProdutos = totalProdutos + Math.abs(produto.price_total);
+          itens.push({
+            numero_item: numeroItem,
+            // TODO: descobrir com o rafffael como pegaremos o codigo NCM dos produtos
+            codigo_ncm: "12345678",
+            codigo_produto: produto.product_id,
+            // descricao não chega nesse momento,
+            //descricao: ""
+            quantidade_comercial: produto.quantity,
+            quantidade_tributavel: produto.quantity,
+            // TODO: descobrir o que é CFOP
+            cfop: "123456",
+            valor_unitario_comercial: produto.price,
+            valor_unitario_tributavel: produto.price,
+            unidade_comercial: "UN",
+            unidade_tributavel: "UN",
+            icms_origem: 0,
+            icms_situacao_tributaria: 40,
+          });
         }
       });
 
       //pega a timezone do container
       //TODO colocar a timezone do brasil na mao 0_0 ?
       var dataVenda = new Date(Date.parse(json.sale_date));
+
+      //Fazendo esse alias para incluir os produtos
+      var Produtos = models.Venda.hasMany(models.Item, {as: 'produtos'});
 
       models.Venda.create({
         id_vend: json.id,
@@ -60,7 +86,11 @@ const CNPJAER = "";
         valor_total: json.totals.total_price,
         icms_valor_total: json.totals.total_tax,
         //venda nova
-        estado: 0
+        estado: 0,
+        produtos: itens,
+      },
+      {
+        include: [ Produtos ]
       });
 
       res.send(json);

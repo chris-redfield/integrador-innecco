@@ -147,17 +147,23 @@ models.Item = sequelize.define('item', {
     type: Sequelize.STRING,
   },
   icms_origem: {
-    /*  Aceita valores entre 1 e 7, vide documentação
-    no site focus nfc-e   */
+    /*  Aceita valores entre 1 e 7,
+        0: nacional
+        1: estrangeira (importação direta)
+        2: estrangeira (adquirida no mercado interno)
+        3: nacional com mais de 40% de conteúdo estrangeiro
+        4: nacional produzida através de processos produtivos básicos
+        5: nacional com menos de 40% de conteúdo estrangeiro
+        6: estrangeira (importação direta) sem produto nacional similar
+        7: estrangeira (adquirida no mercado interno) sem produto nacional similar
+    */
     type: Sequelize.INTEGER,
   },
   /*
   Valores possíveis:
   Para empresas optantes do SIMPLES:
   103 - Isenção do ICMS no Simples Nacional para faixa de receita bruta (para simples)
-
   Para empresas não optantes do SIMPLES
-
   00 - tributada integralmente (para quem não é do simples)
   40 - Isenta (para quem não é do simples)
   */
