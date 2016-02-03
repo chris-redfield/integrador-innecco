@@ -37,9 +37,9 @@ const CNPJAER = "";
       var totalProdutos = "";
       var itens = [];
 
-      /*  essa iteração está duplicada, pois precisamos obter o valor total dos descontos
-          e produtos para incluí-los na venda, antes de criar os objetos produtos, que
-          dependem da venda para existir */
+      /*  Itera dentre os produtos, se o valor for < 0, é um descontos
+          se o valor for > 0, então é produto, adicione no array 'itens'
+       */
       var numeroItem = 1;
       produtos.forEach(function(produto) {
         if(produto.price_total < 0 ){
