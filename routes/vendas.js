@@ -1,7 +1,8 @@
+var request = require('request');
 var express = require('express');
 var router = express.Router();
 var models = require('../models');
-const CNPJ303 = "14.271.394/0001-27";
+const CNPJ303 = "14271394000127";
 const IDREG303 = "02d59481-b67d-11e5-f667-a8d2d7daaf57";
 const IDREGAER = "02d59481-b656-11e5-f667-ad63e6b21a72";
 //TODO - Descobrir qual o CNPJ do aeroporto
@@ -14,14 +15,14 @@ const CNPJAER = "";
 
     var cnpj = "";
     var json = JSON.parse(req.body.payload);
-    var cpfCliente = "";
-    var nomeCliente = "";
+    var cpfCliente = '73723819168';
+    var nomeCliente = "Cliente de teste";
 
     //Verifica qual o id do registrador, e associa ao CNPJ certo
       if(json.register_id == IDREG303){
         cnpj = CNPJ303;
       } else {
-        cnpj = CNPJAER;
+        cnpj = CNPJ303;
       }
 
       // caso a venda não seja anônima, pega os dados do cliente
@@ -53,7 +54,7 @@ const CNPJAER = "";
             codigo_ncm: "12345678",
             codigo_produto: produto.product_id,
             // descricao não chega nesse momento,
-            //descricao: ""
+            descricao: "teste",
             quantidade_comercial: produto.quantity,
             quantidade_tributavel: produto.quantity,
             // TODO: descobrir o que é CFOP
@@ -113,8 +114,26 @@ const CNPJAER = "";
       }
     );
 
-      res.send(json);
+    res.send(json);
 
+  });
+
+
+  router.post('/teste', function(req, res){
+    models.Venda.findOne({
+      attributes: { exclude: ['estado']},
+      where: { cnpj_emitente: CNPJ303, cpf_destinatario: '73723819168' },
+      include: [models.Item, models.FormaPagamento]
+    }).then(function(result){
+      request.post(
+        'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=token&ref=1',
+        { body: result,
+        json: true },
+        function (error, response, body) {
+          res.send(error+' '+response+' '+body);
+        }
+      );
+    });
   });
 
 module.exports = router;
