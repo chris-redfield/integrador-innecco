@@ -1,5 +1,6 @@
 var request = require('request');
 var express = require('express');
+var vend = require('vend-nodejs-sdk')({});
 var router = express.Router();
 var models = require('../models');
 const CNPJ303 = "14271394000127";
@@ -134,6 +135,26 @@ const CNPJAER = "";
         }
       );
     });
+  });
+
+  router.get('/teste', function(req, res){
+    var args = vend.args.products.fetch();
+    args.orderBy.value = 'id';
+    //args.page.value = 1;
+    //args.pageSize.value = 5;
+    args.active.value = true;
+
+    var connectionInfo = {
+      domainPrefix: 'memodesign',
+      accessToken: 'access_token'
+    };
+
+    vend.products.fetch(args, connectionInfo)
+      .then(function(response){
+        response.products.forEach(function(product){
+          console.log(product.id+': '+product.name+'  '+product.price);
+        });
+      });
   });
 
 module.exports = router;
