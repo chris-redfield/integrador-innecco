@@ -6,5 +6,6 @@ settings.IDREG303 = "";
 settings.IDREGAER = "";
 settings.CLIENT_ID = "";
 settings.CLIENT_SECRET = "";
+settings.STORAGE_PATH = "";
 
 module.exports = settings;
