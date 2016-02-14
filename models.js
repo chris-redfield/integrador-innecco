@@ -2,6 +2,8 @@
     DAO do objeto venda
 */
 var Sequelize = require('sequelize');
+var settings = require('./settings');
+
 var models = {};
 
 var sequelize = new Sequelize('dbvendas', 'username', 'password', {
@@ -15,7 +17,7 @@ var sequelize = new Sequelize('dbvendas', 'username', 'password', {
   },
 
   // SQLite only
-  storage: 'db/database.sqlite'
+  storage: settings.STORAGE_PATH
 });
 
 models.Venda = sequelize.define('venda', {
