@@ -2,7 +2,8 @@ var request = require('request');
 var express = require('express');
 var router = express.Router();
 var models = require('../models');
-const CNPJ303 = "14271394000127";
+var bodyParser = require('body-parser');
+const CNPJ303 = "14.271.394/0001-27";
 const IDREG303 = "02d59481-b67d-11e5-f667-a8d2d7daaf57";
 const IDREGAER = "02d59481-b656-11e5-f667-ad63e6b21a72";
 //TODO - Descobrir qual o CNPJ do aeroporto
@@ -34,8 +35,8 @@ const CNPJAER = "";
 
       var produtos = json.register_sale_products;
       var formasPagamento = json.register_sale_payments;
-      var totalDesconto = "";
-      var totalProdutos = "";
+      var totalDesconto = 0;
+      var totalProdutos = 0;
       var itens = [];
       var formasPag = [];
 
@@ -122,7 +123,7 @@ const CNPJAER = "";
   router.post('/teste', function(req, res){
     models.Venda.findOne({
       attributes: { exclude: ['estado']},
-      where: { cnpj_emitente: CNPJ303, cpf_destinatario: '73723819168' },
+      where: { cnpj_emitente: CNPJ303, cpf_destinatario: '90231643187' },
       include: [models.Item, models.FormaPagamento]
     }).then(function(result){
       request.post(
@@ -130,8 +131,11 @@ const CNPJAER = "";
         { body: result,
         json: true },
         function (error, response, body) {
-          res.send(error+' '+response+' '+body);
+
+          res.send(error+' '+response+' '+JSON.stringify(body));
+          console.log(error+' '+response+' '+JSON.stringify(body));
         }
+
       );
     });
   });
