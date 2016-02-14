@@ -253,6 +253,24 @@ models.FormaPagamento.associate(models);
 models.Item.associate(models);
 models.Venda.associate(models);
 
+models.Auth = sequelize.define('auth', {
+  access_token: {
+    type: Sequelize.STRING,
+  },
+  refresh_token: {
+    type: Sequelize.STRING,
+  },
+  expires: {
+    type: Sequelize.STRING,
+  },
+  expires_in: {
+    type: Sequelize.STRING,
+  },
+  token_type: {
+    type: Sequelize.STRING,
+  }
+})
+
 models.sequelize = sequelize;
 models.Sequelize = Sequelize;
 
