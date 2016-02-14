@@ -6,23 +6,6 @@ var models = require('../models');
 var bodyParser = require('body-parser');
 var settings = require('../settings');
 
-var oauth2 = require('simple-oauth2')({
-  clientID: settings.CLIENT_ID,
-  clientSecret: settings.CLIENT_SECRET,
-  site: 'https://memodesign.vendhq.com/',
-  tokenPath: '/api/1.0/token',
-  //authorizationPath: 'https://secure.vendhq.com/connect'
-});
-
-  /* rota para pegar o auth code pela primeira vez
-  router.all('/vendcallback', function(req,res,next){
-
-    console.log(req.query);
-    console.log(req.body);
-    res.send("OK!");
-
-  }); */
-
   router.post('/', function(req, res, next) {
 
     //  mostra o corpo inteiro do request
@@ -69,7 +52,7 @@ var oauth2 = require('simple-oauth2')({
             codigo_ncm: "12345678",
             codigo_produto: produto.product_id,
             // descricao não chega nesse momento,
-            descricao: "teste",
+            descricao: "",
             quantidade_comercial: produto.quantity,
             quantidade_tributavel: produto.quantity,
             // TODO: descobrir o que é CFOP
@@ -129,22 +112,29 @@ var oauth2 = require('simple-oauth2')({
         include: [ Produtos, Formas ]
       }
     ).then(function(venda){
-      if()
+      if(venda instanceof models.Sequelize.ValidationError) throw e;
+      venda.produtos.forEach(function(item){
+        getProduct(item)
+      });
     });
 
-    res.send(json);
+    res.end();
 
   });
 
 
-  router.post('/teste', function(req, res){
+  /*router.get('/teste', function(req, res){
     models.Venda.findOne({
       attributes: { exclude: ['estado']},
       where: { cnpj_emitente: settings.CNPJ303, cpf_destinatario: '90231643187' },
       include: [models.Item, models.FormaPagamento]
     }).then(function(result){
+      result.items.forEach(function(item){
+        getProduct(item)
+      });
       request.post(
-        'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=token&ref=' + result.invoice_number,
+        'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=' +
+        settings.TOKEN_FOCUS + '&ref=' + result.invoice_number,
         { body: result,
         json: true },
         function (error, response, body) {
@@ -155,36 +145,19 @@ var oauth2 = require('simple-oauth2')({
 
       );
     });
-  });
+  });*/
 
-  var getProduct = function(product_id){
+  var getProduct = function(product){
     var args = vend.args.products.fetchById();
-    args.apiId = product_id;
+    args.apiId.value = product.codigo_produto;
 
-    vend.products.fetchById(args, connectionInfo)
+    vend.products.fetchById(args, settings.connectionInfo)
       .then(function(response){
-
-      });
-  }
-
-  router.get('/teste', function(req, res){
-    var args = vend.args.products.fetch();
-    args.orderBy.value = 'id';
-    //args.page.value = 1;
-    //args.pageSize.value = 5;
-    args.active.value = true;
-
-    var connectionInfo = {
-      domainPrefix: 'memodesign',
-      accessToken: 'access_token'
-    };
-
-    vend.products.fetch(args, connectionInfo)
-      .then(function(response){
-        response.products.forEach(function(product){
-          console.log(product.id+': '+product.name+'  '+product.price);
+        product.descricao = response.products[0].name;
+        product.save().then(function(){
+          console.log(product);
         });
       });
-  });
+  }
 
 module.exports = router;
