@@ -127,7 +127,9 @@ var oauth2 = require('simple-oauth2')({
       {
         include: [ Produtos, Formas ]
       }
-    );
+    ).then(function(venda){
+      if()
+    });
 
     res.send(json);
 
@@ -153,6 +155,16 @@ var oauth2 = require('simple-oauth2')({
       );
     });
   });
+
+  var getProduct = function(product_id){
+    var args = vend.args.products.fetchById();
+    args.apiId = product_id;
+
+    vend.products.fetchById(args, connectionInfo)
+      .then(function(response){
+
+      });
+  }
 
   router.get('/teste', function(req, res){
     var args = vend.args.products.fetch();
