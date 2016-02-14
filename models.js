@@ -36,6 +36,9 @@ models.Venda = sequelize.define('venda', {
     type: Sequelize.INTEGER,
     defaultValue: 0,
   },
+  invoice_number: {
+    type: Sequelize.INTEGER,
+  },
   nome_destinatario: {
     type: Sequelize.STRING,
   },

@@ -119,6 +119,7 @@ var oauth2 = require('simple-oauth2')({
         valor_desconto: totalDesconto,
         valor_total: json.totals.total_price,
         icms_valor_total: json.totals.total_tax,
+        invoice_number: json.invoice_number,
         //venda nova
         estado: 0,
         produtos: itens,
@@ -141,7 +142,7 @@ var oauth2 = require('simple-oauth2')({
       include: [models.Item, models.FormaPagamento]
     }).then(function(result){
       request.post(
-        'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=token&ref=1',
+        'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=token&ref=' + result.invoice_number,
         { body: result,
         json: true },
         function (error, response, body) {
