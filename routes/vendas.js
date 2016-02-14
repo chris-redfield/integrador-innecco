@@ -3,11 +3,25 @@ var express = require('express');
 var vend = require('vend-nodejs-sdk')({});
 var router = express.Router();
 var models = require('../models');
-const CNPJ303 = "14271394000127";
-const IDREG303 = "02d59481-b67d-11e5-f667-a8d2d7daaf57";
-const IDREGAER = "02d59481-b656-11e5-f667-ad63e6b21a72";
-//TODO - Descobrir qual o CNPJ do aeroporto
-const CNPJAER = "";
+var bodyParser = require('body-parser');
+var settings = require('../settings');
+
+var oauth2 = require('simple-oauth2')({
+  clientID: settings.CLIENT_ID,
+  clientSecret: settings.CLIENT_SECRET,
+  site: 'https://memodesign.vendhq.com/',
+  tokenPath: '/api/1.0/token',
+  //authorizationPath: 'https://secure.vendhq.com/connect'
+});
+
+  /* rota para pegar o auth code pela primeira vez
+  router.all('/vendcallback', function(req,res,next){
+
+    console.log(req.query);
+    console.log(req.body);
+    res.send("OK!");
+
+  }); */
 
   router.post('/', function(req, res, next) {
 
@@ -15,15 +29,15 @@ const CNPJAER = "";
     //  console.log(req.body);
 
     var cnpj = "";
+    var cpfCliente = '';
+    var nomeCliente = "";
     var json = JSON.parse(req.body.payload);
-    var cpfCliente = '73723819168';
-    var nomeCliente = "Cliente de teste";
 
     //Verifica qual o id do registrador, e associa ao CNPJ certo
-      if(json.register_id == IDREG303){
-        cnpj = CNPJ303;
+      if(json.register_id == settings.IDREG303){
+        cnpj = settings.CNPJ303;
       } else {
-        cnpj = CNPJ303;
+        cnpj = settings.CNPJAER;
       }
 
       // caso a venda não seja anônima, pega os dados do cliente
@@ -35,8 +49,8 @@ const CNPJAER = "";
 
       var produtos = json.register_sale_products;
       var formasPagamento = json.register_sale_payments;
-      var totalDesconto = "";
-      var totalProdutos = "";
+      var totalDesconto = 0;
+      var totalProdutos = 0;
       var itens = [];
       var formasPag = [];
 
@@ -123,7 +137,7 @@ const CNPJAER = "";
   router.post('/teste', function(req, res){
     models.Venda.findOne({
       attributes: { exclude: ['estado']},
-      where: { cnpj_emitente: CNPJ303, cpf_destinatario: '73723819168' },
+      where: { cnpj_emitente: settings.CNPJ303, cpf_destinatario: '90231643187' },
       include: [models.Item, models.FormaPagamento]
     }).then(function(result){
       request.post(
@@ -131,8 +145,11 @@ const CNPJAER = "";
         { body: result,
         json: true },
         function (error, response, body) {
-          res.send(error+' '+response+' '+body);
+
+          res.send(error+' '+response+' '+JSON.stringify(body));
+          console.log(error+' '+response+' '+JSON.stringify(body));
         }
+
       );
     });
   });
