@@ -113,8 +113,13 @@ var settings = require('../settings');
       }
     ).then(function(venda){
       if(venda instanceof models.Sequelize.ValidationError) throw e;
-      venda.produtos.forEach(function(item){
-        getProduct(item)
+      //venda.produtos.forEach(function(item){
+        //atualizaProduto(item);
+      //});
+      var atualiza = Promise.all(venda.produtos.map(atualizaProduto))
+      atualiza.then(function(){
+        venda.estado = 1;
+        venda.save().then(function(){});
       });
     });
 
@@ -147,17 +152,17 @@ var settings = require('../settings');
     });
   });*/
 
-  var getProduct = function(product){
+  var atualizaProduto = function(product){
     var args = vend.args.products.fetchById();
     args.apiId.value = product.codigo_produto;
 
     vend.products.fetchById(args, settings.connectionInfo)
       .then(function(response){
         product.descricao = response.products[0].name;
-        product.save().then(function(){
-          console.log(product);
+        return new Promise(function(resolve, reject){
+          product.save().then(function(obj){resolve(obj);})
         });
-      });
+    });
   }
 
 module.exports = router;
