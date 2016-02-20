@@ -55,8 +55,8 @@ var settings = require('../settings');
             descricao: "",
             quantidade_comercial: produto.quantity,
             quantidade_tributavel: produto.quantity,
-            // TODO: descobrir o que é CFOP
-            cfop: "123456",
+            // CFOP de vendas internas
+            cfop: "5102",
             valor_unitario_comercial: produto.price,
             valor_unitario_tributavel: produto.price,
             unidade_comercial: "UN",
@@ -127,16 +127,24 @@ var settings = require('../settings');
 
   });
 
-
-  /*router.get('/teste', function(req, res){
+/*
+  router.get('/teste', function(req, res){
     models.Venda.findOne({
       attributes: { exclude: ['estado']},
       where: { cnpj_emitente: settings.CNPJ303, cpf_destinatario: '90231643187' },
       include: [models.Item, models.FormaPagamento]
     }).then(function(result){
       result.items.forEach(function(item){
-        getProduct(item)
+        item.cfop = "5102";
       });
+
+      // adaptando o nome do campo -_-
+      jsonString = JSON.stringify(result);
+      jsonString = jsonString.replace("forma_pagamentos","formas_pagamento");
+      result = JSON.parse(jsonString);
+
+      console.log(JSON.stringify(result));
+
       request.post(
         'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=' +
         settings.TOKEN_FOCUS + '&ref=' + result.invoice_number,
@@ -146,12 +154,13 @@ var settings = require('../settings');
 
           res.send(error+' '+response+' '+JSON.stringify(body));
           console.log(error+' '+response+' '+JSON.stringify(body));
+
         }
 
       );
     });
-  });*/
-
+  });
+*/
   var atualizaProduto = function(product){
     var args = vend.args.products.fetchById();
     args.apiId.value = product.codigo_produto;
