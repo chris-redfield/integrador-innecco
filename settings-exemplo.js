@@ -14,6 +14,9 @@ var settings.connectionInfo = {
   refreshToken: '',
   expires: 0,
   expires_in: 0,
+  vendClientId: '',
+  vendClientSecret: '',
+  vendTokenService: '',
 };
 
 module.exports = settings;
