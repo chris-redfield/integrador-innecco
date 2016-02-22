@@ -62,7 +62,8 @@ var settings = require('../settings');
             unidade_comercial: "UN",
             unidade_tributavel: "UN",
             icms_origem: 0,
-            icms_situacao_tributaria: 40,
+            icms_situacao_tributaria: 103,
+            icms_aliquota: 0.00,
           });
           numeroItem++;
         }
@@ -75,10 +76,8 @@ var settings = require('../settings');
           forma_pagamento: formaPagamento.payment_type_id,
           valor_pagamento: formaPagamento.amount,
           nome_credenciadora: "Cielo",
-          //Esse número não vem do VendHQ*
-          //TODO veriricar como resolver obter esses dados
-          //esse numero é retornado pela máquina de cartão
-          numero_autorizacao: "12345678",
+          //Esse número não é obrigatório
+          //numero_autorizacao: "12345678",
           bandeira_operadora: "01", //Visa
         });
       });
@@ -127,7 +126,7 @@ var settings = require('../settings');
 
   });
 
-/*
+
   router.get('/teste', function(req, res){
     models.Venda.findOne({
       attributes: { exclude: ['estado']},
@@ -135,7 +134,7 @@ var settings = require('../settings');
       include: [models.Item, models.FormaPagamento]
     }).then(function(result){
       result.items.forEach(function(item){
-        item.cfop = "5102";
+        //item.cfop = "5102";
       });
 
       // adaptando o nome do campo -_-
@@ -160,7 +159,7 @@ var settings = require('../settings');
       );
     });
   });
-*/
+
   var atualizaProduto = function(product){
     var args = vend.args.products.fetchById();
     args.apiId.value = product.codigo_produto;

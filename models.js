@@ -178,7 +178,7 @@ models.Item = sequelize.define('item', {
   /* Deve estar entre 0 e 100, obrigatório se
      situação tributária for igual a 00    */
   icms_aliquota: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.DECIMAL(10, 2),
   }
 },
 {
