@@ -259,7 +259,7 @@ models.Item.associate(models);
 models.Venda.associate(models);
 
 models.Auth = sequelize.define('auth', {
-  domainPrefix: {
+  domain_prefix: {
     type: Sequelize.STRING,
   },
   access_token: {
@@ -274,13 +274,13 @@ models.Auth = sequelize.define('auth', {
   expires_in: {
     type: Sequelize.STRING,
   },
-  vendClientId: {
+  vend_client_id: {
     type: Sequelize.STRING,
   },
-  vendClientSecret: {
+  vend_client_secret: {
     type: Sequelize.STRING,
   },
-  vendTokenService: {
+  vend_token_service: {
     type: Sequelize.STRING,
   },
 })
