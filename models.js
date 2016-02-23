@@ -89,6 +89,9 @@ models.Venda = sequelize.define('venda', {
   modalidade_frete: {
     type: Sequelize.INTEGER,
     defaultValue: 9,
+  },
+  url_nota: {
+    type: Sequelize.STRING,
   }
   //items: {},
   //formas_pagamento: {}
