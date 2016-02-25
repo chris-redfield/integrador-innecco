@@ -164,13 +164,18 @@ var settings = require('../settings');
     var args = vend.args.products.fetchById();
     args.apiId.value = product.codigo_produto;
 
-    vend.products.fetchById(args, settings.connectionInfo)
-      .then(function(response){
-        product.descricao = response.products[0].name;
-        return new Promise(function(resolve, reject){
-          product.save().then(function(obj){resolve(obj);})
-        });
+    models.Auth.findOne().then(function(result){
+      vend.products.fetchById(args, result)
+        .then(function(response){
+          product.descricao = response.products[0].name;
+          result.save();
+          return new Promise(function(resolve, reject){
+            product.save().then(function(obj){resolve(obj);})
+          });
+      });
     });
+
+
   }
 
 module.exports = router;

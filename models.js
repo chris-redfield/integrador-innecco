@@ -264,6 +264,7 @@ models.Venda.associate(models);
 models.Auth = sequelize.define('auth', {
   domainPrefix: {
     type: Sequelize.STRING,
+    defaultValue: "memodesign",
   },
   accessToken: {
     type: Sequelize.STRING,
