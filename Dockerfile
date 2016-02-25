@@ -15,6 +15,8 @@ COPY . /usr/src/app
 
 RUN apt-get update && apt-get install -y sqlite3
 
+ENV TZ 'America/Sao_Paulo'
+
 # roda o package.json de dentro do container
 RUN npm install
 
