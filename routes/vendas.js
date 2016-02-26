@@ -5,6 +5,7 @@ var router = express.Router();
 var models = require('../models');
 var bodyParser = require('body-parser');
 var settings = require('../settings');
+var moment = require('moment');
 
   router.post('/', function(req, res, next) {
 
@@ -142,7 +143,8 @@ var settings = require('../settings');
       jsonString = jsonString.replace("forma_pagamentos","formas_pagamento");
       result = JSON.parse(jsonString);
 
-      console.log(JSON.stringify(result));
+      //Troca para o formato aceito pela SEFAZ
+      result.data_emissao = moment().format(result.data_emissao);
 
       request.post(
         'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=' +
