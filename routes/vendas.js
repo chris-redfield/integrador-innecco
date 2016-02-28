@@ -134,17 +134,24 @@ var moment = require('moment');
       where: { cnpj_emitente: settings.CNPJ303, cpf_destinatario: '90231643187' },
       include: [models.Item, models.FormaPagamento]
     }).then(function(result){
-      result.items.forEach(function(item){
-        //item.cfop = "5102";
-      });
 
       // adaptando o nome do campo -_-
       jsonString = JSON.stringify(result);
       jsonString = jsonString.replace("forma_pagamentos","formas_pagamento");
       result = JSON.parse(jsonString);
 
+      //TODO remover essa marreta da homologação
+      result.nome_destinatario = "NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL";
+      //TODO remover essa marreta da homologação
+      result.items.forEach(function (item){
+        item.descricao = "NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL";
+      });
+
       //Troca para o formato aceito pela SEFAZ
       result.data_emissao = moment().format(result.data_emissao);
+
+      //TODO remover essa marreta da homologação
+      result.data_emissao = moment().format();
 
       request.post(
         'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=' +
