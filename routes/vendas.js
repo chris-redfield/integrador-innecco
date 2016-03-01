@@ -145,6 +145,7 @@ var moment = require('moment');
       //TODO remover essa marreta da homologação
       result.items.forEach(function (item){
         item.descricao = "NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL";
+        item.codigo_ncm = "12081000";
       });
 
       //Troca para o formato aceito pela SEFAZ
