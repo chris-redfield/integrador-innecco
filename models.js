@@ -45,28 +45,6 @@ models.Venda = sequelize.define('venda', {
   cpf_destinatario: {
     type: Sequelize.STRING
   },
-  informacoes_adicionais_contribuinte: {
-    type: Sequelize.TEXT,
-  },
-  natureza_operacao: {
-    type: Sequelize.STRING,
-    defaultValue: "Venda ao Consumidor",
-  },
-  data_emissao: {
-    type: Sequelize.DATE,
-  },
-  tipo_documento: {
-    type: Sequelize.STRING,
-    defaultValue: "1",
-  },
-  presenca_comprador: {
-    type: Sequelize.INTEGER,
-    defaultValue: 1,
-  },
-  finalidade_emissao: {
-    type: Sequelize.STRING,
-    defaultValue: "1",
-  },
   cnpj_emitente: {
     type: Sequelize.STRING,
   },
@@ -86,13 +64,6 @@ models.Venda = sequelize.define('venda', {
   icms_valor_total: {
     type: Sequelize.DECIMAL(10, 2),
   },
-  modalidade_frete: {
-    type: Sequelize.INTEGER,
-    defaultValue: 9,
-  },
-  url_nota: {
-    type: Sequelize.STRING,
-  }
   //items: {},
   //formas_pagamento: {}
 },
@@ -111,11 +82,6 @@ models.Venda = sequelize.define('venda', {
 // Fim da Venda
 
 models.Item = sequelize.define('item', {
-  numero_item: {
-    /*  esse campo deve crescer sequencialmente
-        para cada venda à partir de 1   */
-    type: Sequelize.INTEGER,
-  },
   codigo_ncm: {
     type: Sequelize.STRING,
   },
@@ -125,34 +91,19 @@ models.Item = sequelize.define('item', {
   descricao: {
     type: Sequelize.TEXT,
   },
-  quantidade_comercial: {
+  quantidade: {
     // Quantidade de itens
-    type: Sequelize.INTEGER,
-  },
-  quantidade_tributavel: {
-    /* Caso haja itens tributáveis e não tributáveis
-        por default, colocar a mesma quantidade de itens  */
     type: Sequelize.INTEGER,
   },
   cfop: {
     // Código Fiscal da operação
     type: Sequelize.STRING,
   },
-  valor_unitario_comercial: {
+  valor_unitario: {
     type: Sequelize.DECIMAL(10,2),
   },
-  valor_unitario_tributavel: {
-    /*  caso o produto seja tributável
-        por default, colocar o mesmo valor do comercial   */
+  valor_descpmtp:{
     type: Sequelize.DECIMAL(10,2),
-  },
-  unidade_comercial: {
-    type: Sequelize.STRING,
-  },
-  unidade_tributavel: {
-    /*  caso o produto seja tributável
-        por default, colocar o mesmo valor da unidade_comercial   */
-    type: Sequelize.STRING,
   },
   icms_origem: {
     /*  Aceita valores entre 1 e 7,
@@ -213,6 +164,10 @@ models.FormaPagamento = sequelize.define('forma_pagamento', {
   },
   valor_pagamento: {
     type: Sequelize.INTEGER,
+  },
+  tipo_integracao: {
+    type: Sequelize.INTEGER,
+    defaultValue: 2,
   },
   /*
   Obrigatório se forma_pagamento for 03 ou 04

@@ -38,35 +38,25 @@ var moment = require('moment');
       var itens = [];
       var formasPag = [];
 
-      /*  Itera dentre os produtos, se o valor for < 0, é um descontos
-          se o valor for > 0, então é produto, adicione no array 'itens'
-       */
-      var numeroItem = 1;
       produtos.forEach(function(produto) {
         if(produto.price_total < 0 ){
           totalDesconto = totalDesconto + Math.abs(produto.price_total);
         } else {
           totalProdutos = totalProdutos + Math.abs(produto.price_total);
           itens.push({
-            numero_item: numeroItem,
             // TODO: descobrir com o rafffael como pegaremos o codigo NCM dos produtos
             codigo_ncm: "12345678",
             codigo_produto: produto.product_id,
             // descricao não chega nesse momento,
             descricao: "",
-            quantidade_comercial: produto.quantity,
-            quantidade_tributavel: produto.quantity,
+            quantidade: produto.quantity,
             // CFOP de vendas internas
             cfop: "5102",
-            valor_unitario_comercial: produto.price,
-            valor_unitario_tributavel: produto.price,
-            unidade_comercial: "UN",
-            unidade_tributavel: "UN",
+            valor_unitario: produto.price,
             icms_origem: 0,
             icms_situacao_tributaria: 103,
             icms_aliquota: 0.00,
           });
-          numeroItem++;
         }
       });
 
@@ -77,9 +67,6 @@ var moment = require('moment');
           forma_pagamento: formaPagamento.payment_type_id,
           valor_pagamento: formaPagamento.amount,
           nome_credenciadora: "Cielo",
-          //Esse número não é obrigatório
-          //numero_autorizacao: "12345678",
-          bandeira_operadora: "01", //Visa
         });
       });
 
@@ -95,11 +82,11 @@ var moment = require('moment');
         id_vend: json.id,
         //TODO cologar o time zone do brasil
         data_emissao: dataVenda,
-        cnpj_emitente: cnpj,
         nome_destinatario: nomeCliente,
         cpf_destinatario: cpfCliente,
         valor_produtos: totalProdutos,
         valor_desconto: totalDesconto,
+        cnpj_emitente: settings.CNPJ303,
         valor_total: json.totals.total_price,
         icms_valor_total: json.totals.total_tax,
         invoice_number: json.invoice_number,
@@ -131,7 +118,7 @@ var moment = require('moment');
   router.get('/teste', function(req, res){
     models.Venda.findOne({
       attributes: { exclude: ['estado']},
-      where: { cnpj_emitente: settings.CNPJ303, cpf_destinatario: '90231643187' },
+      where: { cpf_destinatario: '90231643187' },
       include: [models.Item, models.FormaPagamento]
     }).then(function(result){
 
@@ -147,6 +134,8 @@ var moment = require('moment');
         item.descricao = "NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL";
         item.codigo_ncm = "12081000";
       });
+
+      console.log(JSON.stringify(result));
 
       //Troca para o formato aceito pela SEFAZ
       result.data_emissao = moment().format(result.data_emissao);
