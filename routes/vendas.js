@@ -58,6 +58,7 @@ var moment = require('moment');
             quantidade_tributavel: produto.quantity,
             // CFOP de vendas internas
             cfop: "5102",
+            valor_bruto: produto.price,
             valor_unitario_comercial: produto.price,
             valor_unitario_tributavel: produto.price,
             unidade_comercial: "UN",
@@ -146,6 +147,7 @@ var moment = require('moment');
       result.items.forEach(function (item){
         item.descricao = "NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL";
         item.codigo_ncm = "12081000";
+        item.valor_bruto = item.valor_unitario_comercial;
       });
 
       //Troca para o formato aceito pela SEFAZ
@@ -153,6 +155,7 @@ var moment = require('moment');
 
       //TODO remover essa marreta da homologação
       result.data_emissao = moment().format();
+
 
       request.post(
         'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=' +
@@ -167,6 +170,7 @@ var moment = require('moment');
         }
 
       );
+      //res.send(result);
     });
   });
 

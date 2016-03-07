@@ -138,6 +138,9 @@ models.Item = sequelize.define('item', {
     // Código Fiscal da operação
     type: Sequelize.STRING,
   },
+  valor_bruto: {
+    type: Sequelize.DECIMAL(10,2),
+  },
   valor_unitario_comercial: {
     type: Sequelize.DECIMAL(10,2),
   },
