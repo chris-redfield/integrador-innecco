@@ -86,7 +86,7 @@ var moment = require('moment');
 
       //pega a timezone do container
       //TODO colocar a timezone do brasil na mao 0_0 ?
-      var dataVenda = new Date(Date.parse(json.sale_date));
+      var dataVenda = moment().format();
 
       //Fazendo esse alias para incluir os produtos
       var Produtos = models.Venda.hasMany(models.Item, {as: 'produtos'});
@@ -146,6 +146,7 @@ var moment = require('moment');
     jsonString = JSON.stringify(result);
     jsonString = jsonString.replace("forma_pagamentos","formas_pagamento");
     result = JSON.parse(jsonString);
+    result.formas_pagamento = result.forma_pagamentos;
 
     //TODO remover essa marreta da homologação
     result.nome_destinatario = "NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL";
@@ -157,12 +158,13 @@ var moment = require('moment');
     });
 
     //Troca para o formato aceito pela SEFAZ
-    result.data_emissao = moment().format(result.data_emissao);
+    //result.data_emissao = moment(result.data_emissao).format();
 
     //TODO remover essa marreta da homologação
-    result.data_emissao = moment().format();
+    result.data_emissao = moment().format("YYYY-MM-DDTHH:mm:ssZZ");
 
-    delete result.estado
+    delete result.estado;
+    delete result.formas_pagamento;
 
     return result;
   }
@@ -172,11 +174,19 @@ var moment = require('moment');
 
     request.post(
       'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=' +
-      settings.TOKEN_FOCUS + '&ref=' + result.invoice_number+2,
+      settings.TOKEN_FOCUS + '&ref=' + result.invoice_number+15,
       { body: result,
       json: true },
       function (error, response, body) {
         console.log(error+' '+response+' '+JSON.stringify(body));
+        result.url_nota = body.requisicao_nota_fiscal.qrcode;
+        result.estado = 2;
+        models.Venda.update(result
+        , {
+          where: {
+            id: result.id
+          }
+        });
       }
     );
   }
