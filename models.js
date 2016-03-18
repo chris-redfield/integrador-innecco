@@ -288,6 +288,39 @@ models.Auth = sequelize.define('auth', {
   },
 })
 
+models.Nota = sequelize.define('nota_fiscal', {
+  status: {
+    type: Sequelize.STRING
+  },
+  status_sefaz: {
+    type: Sequelize.STRING
+  },
+  mensagem_sefaz: {
+    type: Sequelize.STRING
+  },
+  chave_nfe: {
+    type: Sequelize.STRING
+  },
+  numero: {
+    type: Sequelize.STRING
+  },
+  serie: {
+    type: Sequelize.STRING
+  },
+  caminho_xml_nota_fiscal: {
+    type: Sequelize.STRING
+  },
+  caminho_danfe: {
+    type: Sequelize.STRING
+  },
+  qrcode_url: {
+    type: Sequelize.STRING
+  },
+  url_consulta_nf: {
+    type: Sequelize.STRING
+  }
+})
+
 models.sequelize = sequelize;
 models.Sequelize = Sequelize;
 
