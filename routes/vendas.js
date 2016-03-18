@@ -58,6 +58,7 @@ var moment = require('moment');
             quantidade_tributavel: produto.quantity,
             // CFOP de vendas internas
             cfop: "5102",
+            valor_bruto: produto.price,
             valor_unitario_comercial: produto.price,
             valor_unitario_tributavel: produto.price,
             unidade_comercial: "UN",
@@ -85,7 +86,7 @@ var moment = require('moment');
 
       //pega a timezone do container
       //TODO colocar a timezone do brasil na mao 0_0 ?
-      var dataVenda = new Date(Date.parse(json.sale_date));
+      var dataVenda = moment().format();
 
       //Fazendo esse alias para incluir os produtos
       var Produtos = models.Venda.hasMany(models.Item, {as: 'produtos'});
@@ -105,69 +106,25 @@ var moment = require('moment');
         invoice_number: json.invoice_number,
         //venda nova
         estado: 0,
-        produtos: itens,
+        items: itens,
         formas: formasPag,
       },
       {
-        include: [ Produtos, Formas ]
+        //include: [ Produtos, Formas ],
+        include: [models.Item, models.FormaPagamento]
       }
     ).then(function(venda){
       if(venda instanceof models.Sequelize.ValidationError) throw e;
-      //venda.produtos.forEach(function(item){
-        //atualizaProduto(item);
-      //});
-      var atualiza = Promise.all(venda.produtos.map(atualizaProduto))
+
+      var atualiza = Promise.all(venda.items.map(atualizaProduto))
       atualiza.then(function(){
         venda.estado = 1;
-        venda.save().then(function(){});
+        venda.save().then(function(){
+          enviaNfc(venda);
+        });
       });
     });
-
     res.end();
-
-  });
-
-
-  router.get('/teste', function(req, res){
-    models.Venda.findOne({
-      attributes: { exclude: ['estado']},
-      where: { cnpj_emitente: settings.CNPJ303, cpf_destinatario: '90231643187' },
-      include: [models.Item, models.FormaPagamento]
-    }).then(function(result){
-
-      // adaptando o nome do campo -_-
-      jsonString = JSON.stringify(result);
-      jsonString = jsonString.replace("forma_pagamentos","formas_pagamento");
-      result = JSON.parse(jsonString);
-
-      //TODO remover essa marreta da homologação
-      result.nome_destinatario = "NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL";
-      //TODO remover essa marreta da homologação
-      result.items.forEach(function (item){
-        item.descricao = "NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL";
-        item.codigo_ncm = "12081000";
-      });
-
-      //Troca para o formato aceito pela SEFAZ
-      result.data_emissao = moment().format(result.data_emissao);
-
-      //TODO remover essa marreta da homologação
-      result.data_emissao = moment().format();
-
-      request.post(
-        'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=' +
-        settings.TOKEN_FOCUS + '&ref=' + result.invoice_number,
-        { body: result,
-        json: true },
-        function (error, response, body) {
-
-          res.send(error+' '+response+' '+JSON.stringify(body));
-          console.log(error+' '+response+' '+JSON.stringify(body));
-
-        }
-
-      );
-    });
   });
 
   var atualizaProduto = function(product){
@@ -179,13 +136,59 @@ var moment = require('moment');
         .then(function(response){
           product.descricao = response.products[0].name;
           result.save();
-          return new Promise(function(resolve, reject){
-            product.save().then(function(obj){resolve(obj);})
-          });
+          return product.save()
       });
     });
+  }
 
+  var preparaJsonFocus = function(result){
+    // adaptando o nome do campo -_-
+    jsonString = JSON.stringify(result);
+    jsonString = jsonString.replace("forma_pagamentos","formas_pagamento");
+    result = JSON.parse(jsonString);
+    result.formas_pagamento = result.forma_pagamentos;
 
+    //TODO remover essa marreta da homologação
+    result.nome_destinatario = "NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL";
+    //TODO remover essa marreta da homologação
+    result.items.forEach(function (item){
+      item.descricao = "NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL";
+      item.codigo_ncm = "12081000";
+      item.valor_bruto = item.valor_unitario_comercial;
+    });
+
+    //Troca para o formato aceito pela SEFAZ
+    //result.data_emissao = moment(result.data_emissao).format();
+
+    //TODO remover essa marreta da homologação
+    result.data_emissao = moment().format("YYYY-MM-DDTHH:mm:ssZZ");
+
+    delete result.estado;
+    delete result.formas_pagamento;
+
+    return result;
+  }
+
+  var enviaNfc = function(result){
+    result = preparaJsonFocus(result);
+
+    request.post(
+      'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=' +
+      settings.TOKEN_FOCUS + '&ref=' + result.invoice_number+15,
+      { body: result,
+      json: true },
+      function (error, response, body) {
+        console.log(error+' '+response+' '+JSON.stringify(body));
+        result.url_nota = body.requisicao_nota_fiscal.qrcode;
+        result.estado = 2;
+        models.Venda.update(result
+        , {
+          where: {
+            id: result.id
+          }
+        });
+      }
+    );
   }
 
 module.exports = router;
