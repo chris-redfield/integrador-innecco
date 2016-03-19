@@ -9,9 +9,6 @@ var moment = require('moment');
 
   router.post('/', function(req, res, next) {
 
-    //  mostra o corpo inteiro do request
-    //  console.log(req.body);
-
     var cnpj = "";
     var cpfCliente = '';
     var nomeCliente = "";
@@ -49,8 +46,8 @@ var moment = require('moment');
           totalProdutos = totalProdutos + Math.abs(produto.price_total);
           itens.push({
             numero_item: numeroItem,
-            // TODO: descobrir com o rafffael como pegaremos o codigo NCM dos produtos
-            codigo_ncm: "12345678",
+            // Populando com código NCM genérico
+            codigo_ncm: "42022220",
             codigo_produto: produto.product_id,
             // descricao não chega nesse momento,
             descricao: "",
@@ -115,7 +112,8 @@ var moment = require('moment');
 
       consultaCliente(venda, json.customer, function(vendaCnpj){
 
-        console.log(vendaCnpj);
+        //console.log(vendaCnpj);
+
         // venda para CNPJ
         if(vendaCnpj.estado === 5 ){
         //TODO IMPRIMIR sem enviar para o NFC
@@ -143,6 +141,8 @@ var moment = require('moment');
       vend.products.fetchById(args, result)
         .then(function(response){
           product.descricao = response.products[0].name;
+          product.codigo_ncm = response.products[0].account_code_purchase;
+          console.log(product);
           result.save();
           return product.save();
       });
@@ -202,7 +202,7 @@ var moment = require('moment');
       { body: result,
       json: true },
       function (error, response, body) {
-        console.log(error+' '+response+' '+JSON.stringify(body));
+        console.log(error+' '+JSON.stringify(response)+' '+JSON.stringify(body));
         result.url_nota = body.requisicao_nota_fiscal.qrcode;
         result.estado = 2;
         models.Venda.update(result
