@@ -72,12 +72,10 @@ var moment = require('moment');
         //por enquanto estamos pegando o type_id
         //TODO: refazer esse método de inserção após ajustes no Vend pelo Raffael
         formasPag.push({
-          forma_pagamento: formaPagamento.payment_type_id,
+          forma_pagamento: settings.FORMAS_PAGAMENTO[formaPagamento.retailer_payment_type.name].forma_pagamento,
           valor_pagamento: formaPagamento.amount,
           nome_credenciadora: "Cielo",
-          //Esse número não é obrigatório
-          //numero_autorizacao: "12345678",
-          bandeira_operadora: "01", //Visa
+          bandeira_operadora: settings.FORMAS_PAGAMENTO[formaPagamento.retailer_payment_type.name].bandeira_operadora,
         });
       });
 
@@ -102,7 +100,7 @@ var moment = require('moment');
         //venda nova
         estado: 0,
         items: itens,
-        formas: formasPag,
+        forma_pagamentos: formasPag,
       },
       {
         include: [models.Item, models.FormaPagamento]
@@ -179,7 +177,6 @@ var moment = require('moment');
       item.valor_bruto = item.valor_unitario_comercial;
     });
 
-    //TODO remover essa marreta da homologação
     result.data_emissao = moment().format("YYYY-MM-DDTHH:mm:ssZZ");
 
     delete result.estado;
