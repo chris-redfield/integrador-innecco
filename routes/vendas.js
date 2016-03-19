@@ -142,7 +142,6 @@ var moment = require('moment');
         .then(function(response){
           product.descricao = response.products[0].name;
           product.codigo_ncm = response.products[0].account_code_purchase;
-          console.log(product);
           result.save();
           return product.save();
       });
@@ -177,12 +176,8 @@ var moment = require('moment');
     //TODO remover essa marreta da homologação
     result.items.forEach(function (item){
       item.descricao = "NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL";
-      item.codigo_ncm = "12081000";
       item.valor_bruto = item.valor_unitario_comercial;
     });
-
-    //Troca para o formato aceito pela SEFAZ
-    //result.data_emissao = moment(result.data_emissao).format();
 
     //TODO remover essa marreta da homologação
     result.data_emissao = moment().format("YYYY-MM-DDTHH:mm:ssZZ");
@@ -198,7 +193,7 @@ var moment = require('moment');
 
     request.post(
       'http://homologacao.acrasnfe.acras.com.br/nfce.json?token=' +
-      settings.TOKEN_FOCUS + '&ref=' + result.invoice_number+15,
+      settings.TOKEN_FOCUS + '&ref=' + result.invoice_number,
       { body: result,
       json: true },
       function (error, response, body) {
