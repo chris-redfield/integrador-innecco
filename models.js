@@ -102,7 +102,8 @@ models.Venda = sequelize.define('venda', {
    classMethods: {
      associate: function(models) {
        models.Venda.hasMany(models.Item),
-       models.Venda.hasMany(models.FormaPagamento)
+       models.Venda.hasMany(models.FormaPagamento),
+       models.Venda.hasMany(models.Erro)
      }
    }
  },
@@ -262,8 +263,23 @@ models.FormaPagamento = sequelize.define('forma_pagamento', {
   freezeTableName: true // Model tableName will be the same as the model name
 });
 
+models.Erro = sequelize.define('erro', {
+    mensagem: {
+      type: Sequelize.TEXT,
+    },
+  },
+  {
+    classMethods: {
+      associate: function(models) {
+        models.Erro.belongsTo(models.Venda)
+      }
+    }
+  }
+);
+
 models.FormaPagamento.associate(models);
 models.Item.associate(models);
+models.Erro.associate(models);
 models.Venda.associate(models);
 
 models.Auth = sequelize.define('auth', {
@@ -291,7 +307,7 @@ models.Auth = sequelize.define('auth', {
   vendTokenService: {
     type: Sequelize.STRING,
   },
-})
+});
 
 models.Nota = sequelize.define('nota_fiscal', {
   status: {
@@ -324,7 +340,7 @@ models.Nota = sequelize.define('nota_fiscal', {
   url_consulta_nf: {
     type: Sequelize.STRING
   }
-})
+});
 
 models.sequelize = sequelize;
 models.Sequelize = Sequelize;

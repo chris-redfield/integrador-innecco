@@ -195,14 +195,27 @@ var moment = require('moment');
       json: true },
       function (error, response, body) {
         console.log(error+' '+JSON.stringify(response)+' '+JSON.stringify(body));
-        result.url_nota = body.requisicao_nota_fiscal.qrcode;
-        result.estado = 2;
-        models.Venda.update(result
-        , {
-          where: {
-            id: result.id
+        try{
+          result.url_nota = body.requisicao_nota_fiscal.qrcode;
+          result.estado = 2;
+          models.Venda.update(result
+          , {
+            where: {
+              id: result.id
+            }
+          });
+        }catch(e){
+          models.Erro.create({
+            mensagem: JSON.stringify(body),
+            vendaId: result.id
+          },
+          {
+            include: [models.Venda]
           }
-        });
+        ).then(function(erro){
+            console.log(erro);
+          });
+        }
       }
     );
   }
