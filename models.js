@@ -31,6 +31,8 @@ models.Venda = sequelize.define('venda', {
     1 - Preenchida com todos os dados
     2 - Emitida no Focus
     3 - Impressa
+    4 - Cancelada
+    5 - Venda CNPJ
   */
   estado: {
     type: Sequelize.INTEGER,

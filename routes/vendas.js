@@ -88,9 +88,7 @@ var moment = require('moment');
       //TODO colocar a timezone do brasil na mao 0_0 ?
       var dataVenda = moment().format();
 
-      //Fazendo esse alias para incluir os produtos
-      var Produtos = models.Venda.hasMany(models.Item, {as: 'produtos'});
-      var Formas = models.Venda.hasMany(models.FormaPagamento, {as: 'formas'});
+
 
       models.Venda.create({
         id_vend: json.id,
@@ -110,19 +108,29 @@ var moment = require('moment');
         formas: formasPag,
       },
       {
-        //include: [ Produtos, Formas ],
         include: [models.Item, models.FormaPagamento]
       }
     ).then(function(venda){
       if(venda instanceof models.Sequelize.ValidationError) throw e;
 
-      var atualiza = Promise.all(venda.items.map(atualizaProduto))
-      atualiza.then(function(){
-        venda.estado = 1;
-        venda.save().then(function(){
-          enviaNfc(venda);
-        });
+      consultaCliente(venda, json.customer, function(vendaCnpj){
+
+        console.log(vendaCnpj);
+        // venda para CNPJ
+        if(vendaCnpj.estado === 5 ){
+        //TODO IMPRIMIR sem enviar para o NFC
+        } else {
+          var atualiza = Promise.all(venda.items.map(atualizaProduto))
+          atualiza.then(function(){
+            venda.estado = 1;
+            venda.save().then(function(){
+              enviaNfc(venda);
+            });
+          });
+        }
       });
+
+
     });
     res.end();
   });
@@ -136,7 +144,23 @@ var moment = require('moment');
         .then(function(response){
           product.descricao = response.products[0].name;
           result.save();
-          return product.save()
+          return product.save();
+      });
+    });
+  }
+
+  var consultaCliente = function(venda, customer, callback){
+    var args = vend.args.customers.fetch();
+    args.apiId.value = customer.id;
+    models.Auth.findOne().then(function(result){
+      vend.customers.fetch(args, result).then(function(response){
+        if(response.customers[0].customer_group_id === "02d59481-b656-11e5-f667-ebc51b0b11e5"){
+          venda.estado = 5;
+        }
+        result.save();
+        venda.save().then(function(venda){
+          callback(venda);
+        });
       });
     });
   }
