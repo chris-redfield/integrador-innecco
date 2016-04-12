@@ -342,6 +342,13 @@ models.Nota = sequelize.define('nota_fiscal', {
   }
 });
 
+models.Webhook = sequelize.define('webhook', {
+  id: {
+    type: Sequelize.STRING,
+    primaryKey: true
+  }
+})
+
 models.sequelize = sequelize;
 models.Sequelize = Sequelize;
 

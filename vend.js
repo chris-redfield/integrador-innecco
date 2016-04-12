@@ -11,8 +11,8 @@ vend.fetchWebhooks = function(args, connectionInfo, retryCounter) {
   var vendUrl = 'https://' + connectionInfo.domainPrefix + '.vendhq.com' + path;
   console.log('Requesting vend product ' + vendUrl);
   var authString = 'Bearer ' + connectionInfo.accessToken;
-  log.debug('GET ' + vendUrl);
-  log.debug('Authorization: ' + authString); // TODO: sensitive data ... do not log?
+  /*log.debug('GET ' + vendUrl);
+  log.debug('Authorization: ' + authString);*/
 
   var options = {
     url: vendUrl,
@@ -22,7 +22,7 @@ vend.fetchWebhooks = function(args, connectionInfo, retryCounter) {
     },
   };
 
-  return vend.sendRequest(options, args, connectionInfo, fetchWebhooks, retryCounter);
+  return vend.sendRequest(options, args, connectionInfo, vend.fetchWebhooks, retryCounter);
 };
 
 vend.createWebhook = function(args, connectionInfo, retryCounter) {
@@ -77,14 +77,7 @@ vend.createWebhook = function(args, connectionInfo, retryCounter) {
 };
 
 vend.updateWebhook = function(args, connectionInfo, retryCounter) {
-  console.log('inside updateConsignmentProduct()', args);
-
-  if ( !(args && vend.argsAreValid(args)) ) {
-    return Promise.reject('missing required arguments for updateConsignmentProduct()');
-  }
-
   var body = {
-    'type': args.type,
     'url': args.url
   };
 
@@ -94,7 +87,7 @@ vend.updateWebhook = function(args, connectionInfo, retryCounter) {
     console.log('retry # ' + retryCounter);
   }
 
-  var path = '/api/webhooks/' + args.apiId.value;
+  var path = '/api/webhooks/' + args.id;
   var vendUrl = 'https://' + connectionInfo.domainPrefix + '.vendhq.com' + path;
   var authString = 'Bearer ' + connectionInfo.accessToken;
   console.log('Authorization: ' + authString); // TODO: sensitive data ... do not log?
@@ -109,11 +102,33 @@ vend.updateWebhook = function(args, connectionInfo, retryCounter) {
     },
     json: body
   };
-  console.log(options.method, options.url);
   console.log('body:', options.json);
 
   return vend.sendRequest(options, args, connectionInfo, vend.updateWebhook, retryCounter);
 };
 
+vend.deleteWebhook = function(args, connectionInfo, retryCounter) {
+  if (!retryCounter) {
+    retryCounter = 0;
+  } else {
+    console.log('retry # ' + retryCounter);
+  }
+
+  var path = '/api/webhooks/' + args.apiId;
+  var vendUrl = 'https://' + connectionInfo.domainPrefix + '.vendhq.com' + path;
+  var authString = 'Bearer ' + connectionInfo.accessToken;
+
+  var options = {
+    method: 'DELETE',
+    url: vendUrl,
+    headers: {
+      'Authorization': authString,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  };
+
+  return vend.sendRequest(options, args, connectionInfo, vend.deleteWebhook, retryCounter);
+};
+
 module.exports = vend;
-console.log
